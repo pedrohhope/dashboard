@@ -33,13 +33,13 @@ export class ProductService {
   }
 
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const product = await this.productModel.findById(id).exec();
 
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto) {
     const product = await this.productModel
       .findByIdAndUpdate(id, updateProductDto, { new: true })
       .exec();
@@ -47,7 +47,7 @@ export class ProductService {
     return product;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const product = await this.productModel.findByIdAndDelete(id).exec();
 
     return product;

@@ -43,7 +43,7 @@ export class ProductController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     try {
-      const product = await this.productService.findOne(+id);
+      const product = await this.productService.findOne(id);
 
       return {
         statusCode: HttpStatus.OK,
@@ -58,7 +58,7 @@ export class ProductController {
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     try {
-      const product = await this.productService.update(+id, updateProductDto);
+      const product = await this.productService.update(id, updateProductDto);
 
       return {
         statusCode: HttpStatus.OK,
@@ -73,7 +73,7 @@ export class ProductController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {
-      const product = await this.productService.remove(+id);
+      const product = await this.productService.remove(id);
 
       return {
         statusCode: HttpStatus.OK,
