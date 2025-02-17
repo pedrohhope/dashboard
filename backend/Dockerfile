@@ -1,39 +1,30 @@
-# Stage 1: Construção da aplicação
-FROM node:16-alpine AS builder
+FROM node:22.14.0-alpine AS builder
 
-# Define o diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos de dependências
 COPY package*.json ./
 
-# Instala as dependências (incluindo as de desenvolvimento)
 RUN npm install
 
-# Copia o restante do código para o container
 COPY . .
 
-# Compila a aplicação NestJS (gerando a pasta "dist")
 RUN npm run build
 
+FROM node:22.14.0-alpine
 
-# Stage 2: Imagem final para produção
-FROM node:16-alpine
-
-# Define o diretório de trabalho
 WORKDIR /app
 
-# Copia apenas os arquivos necessários para produção
 COPY package*.json ./
 
-# Instala apenas as dependências de produção
 RUN npm install --only=production
 
-# Copia os arquivos compilados da etapa anterior
 COPY --from=builder /app/dist ./dist
 
-# Expõe a porta que o NestJS utiliza
-EXPOSE 3000
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Comando para iniciar a aplicação
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint.sh"]
+
 CMD ["node", "dist/main"]
