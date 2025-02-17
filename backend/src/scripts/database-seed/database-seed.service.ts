@@ -38,15 +38,13 @@ export class DatabaseSeedService {
         for (let i = 0; i < 20; i++) {
             const price = faker.number.int({ min: 100, max: 50000 });
 
-            const randomCategory = categories[faker.number.int({ min: 0, max: categories.length - 1 })];
+            const randomCategoryIds = faker.helpers.arrayElements(categories, faker.number.int({ min: 1, max: categories.length })).map((category) => category._id);
 
             products.push({
                 name: faker.commerce.productName(),
                 description: faker.commerce.productDescription(),
                 price,
-                categoryIds: [
-                    randomCategory._id
-                ],
+                categoryIds: randomCategoryIds,
                 imageUrl: faker.image.urlPicsumPhotos({
                     height: 200,
                     width: 200
