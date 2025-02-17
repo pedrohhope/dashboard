@@ -32,10 +32,7 @@ export class ProductController {
 
       return {
         statusCode: HttpStatus.OK,
-        data: {
-          products: data.products,
-          count: data.count
-        },
+        data,
         message: 'Products found',
       }
     } catch (error) {
