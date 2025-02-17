@@ -8,7 +8,9 @@ import { GetCategoriesDto } from './dto/get-categories.dto';
 
 @Injectable()
 export class CategoryService {
-  constructor(@InjectModel(Category.name) private categoryModel: Model<Category>) { }
+  constructor(
+    @InjectModel(Category.name) private categoryModel: Model<Category>
+  ) { }
   async create(createCategoryDto: CreateCategoryDto) {
     const createdCategory = new this.categoryModel(createCategoryDto);
     return createdCategory.save();

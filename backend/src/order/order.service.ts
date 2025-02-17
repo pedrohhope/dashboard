@@ -12,6 +12,7 @@ export class OrderService {
 
   async create(createOrderDto: CreateOrderDto) {
     const newOrder = new this.OrderModel(createOrderDto);
+    newOrder.date = new Date();
     return newOrder.save();
   }
 
