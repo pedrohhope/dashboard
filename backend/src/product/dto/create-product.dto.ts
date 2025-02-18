@@ -1,5 +1,5 @@
 import { IsString, IsNotEmpty, IsNumber, IsArray, IsMongoId } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateProductDto {
     @IsString()
@@ -15,12 +15,8 @@ export class CreateProductDto {
     @IsNotEmpty()
     price: number;
 
-    @IsArray()
     @IsMongoId({ each: true })
     @IsNotEmpty()
+    @IsArray()
     categoryIds: string[];
-
-    @IsString()
-    @IsNotEmpty()
-    imageUrl: string;
 }

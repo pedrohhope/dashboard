@@ -5,13 +5,21 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schemas/product.schema';
 import { Model } from 'mongoose';
 import { GetProductsDto } from './dto/get-products.dto';
+import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel(Product.name) private productModel: Model<Product>) { }
+  constructor(
+    private readonly uploadService: UploadService,
+    @InjectModel(Product.name) private productModel: Model<Product>
+  ) { }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
     const newProduct = new this.productModel(createProductDto);
+    if (file) {
+      newProduct.imageUrl = await this.uploadService.uploadFile(file, 'products');
+    }
+
     return newProduct.save();
   }
 
@@ -39,9 +47,13 @@ export class ProductService {
     return product;
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, file: Express.Multer.File) {
+    const updatedProduct = new this.productModel(updateProductDto);
+
+    if (file) updatedProduct.imageUrl = await this.uploadService.uploadFile(file, 'products');
+
     const product = await this.productModel
-      .findByIdAndUpdate(id, updateProductDto, { new: true })
+      .findByIdAndUpdate(id, updatedProduct, { new: true })
       .exec();
 
     return product;

@@ -17,7 +17,10 @@ export class Product {
     @Prop({ type: [Types.ObjectId], ref: 'Category' })
     categoryIds: Types.ObjectId[];
 
-    @Prop({ required: true })
+    @Prop({
+        type: String,
+        default: 'https://placehold.co/300x300',
+    })
     imageUrl: string;
 }
 

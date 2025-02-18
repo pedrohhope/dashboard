@@ -1,17 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GetProductsDto } from './dto/get-products.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
   @Post()
-  async create(@Body() createProductDto: CreateProductDto) {
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
     try {
-      const product = await this.productService.create(createProductDto);
+      const product = await this.productService.create(createProductDto, file);
 
       return {
         statusCode: HttpStatus.CREATED,
@@ -56,9 +61,14 @@ export class ProductController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  @UseInterceptors(FileInterceptor('file'))
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
     try {
-      const product = await this.productService.update(id, updateProductDto);
+      const product = await this.productService.update(id, updateProductDto, file);
 
       return {
         statusCode: HttpStatus.OK,
