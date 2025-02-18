@@ -9,6 +9,11 @@ services:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://root:rootpassword@mongo:27017/hub?authSource=admin
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      - AWS_REGION=us-east-1
+      - AWS_S3_BUCKET=hub
+      - AWS_ENDPOINT=http://localstack:4566
     depends_on:
       - mongo
       - localstack
@@ -32,13 +37,11 @@ services:
     restart: always
     ports:
       - "4566:4566"
-      - "4510-4559:4510-4559"
     environment:
       - SERVICES=s3
-      - DEFAULT_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-      - DEBUG=1
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      - AWS_DEFAULT_REGION=us-east-1
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "localstack_data:/var/lib/localstack"
