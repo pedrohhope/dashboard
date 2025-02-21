@@ -14,8 +14,12 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@fontsource/material-icons": "^5.1.1",
+    "@fontsource/roboto": "^5.1.1",
     "@mui/material": "^6.4.5",
+    "@mui/x-data-grid": "^7.27.0",
     "@toolpad/core": "^0.12.0",
+    "axios": "^1.7.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "^7.2.0"
@@ -26,6 +30,7 @@
     "@storybook/addon-essentials": "^8.5.8",
     "@storybook/addon-interactions": "^8.5.8",
     "@storybook/addon-onboarding": "^8.5.8",
+    "@storybook/addon-themes": "^8.5.8",
     "@storybook/blocks": "^8.5.8",
     "@storybook/react": "^8.5.8",
     "@storybook/react-vite": "^8.5.8",
