@@ -16,6 +16,14 @@ export class CategoryService {
     return createdCategory.save();
   }
 
+  async findAllCategories() {
+    const categories = await this.categoryModel.find().select('name _id').exec();
+    return {
+      categories
+    };
+  }
+
+
   async findAndCount(getCategoriesDto: GetCategoriesDto) {
     const filter = getCategoriesDto.search
       ? { name: { $regex: getCategoriesDto.search, $options: 'i' } }
@@ -52,6 +60,7 @@ export class CategoryService {
   }
 
   async remove(id: string) {
+    console.log("id", id);
     const category = await this.categoryModel.findByIdAndDelete(id).exec();
 
     return category;

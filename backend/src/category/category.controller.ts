@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpException, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { GetCategoriesDto } from './dto/get-categories.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -23,12 +22,37 @@ export class CategoryController {
     }
   }
 
+  @Get('all')
+  async findAllCategories() {
+    try {
+      const {
+        categories
+      } = await this.categoryService.findAllCategories();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: {
+          categories
+        },
+        message: 'categories found',
+      }
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Get()
-  async findAll(
-    @Body() getCategoriesDto: GetCategoriesDto
+  async findAndCount(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('search') search?: string,
   ) {
     try {
-      const data = await this.categoryService.findAndCount(getCategoriesDto);
+      const data = await this.categoryService.findAndCount({
+        limit: parseInt(limit),
+        page: parseInt(page),
+        search
+      });
 
       return {
         statusCode: HttpStatus.OK,

@@ -27,18 +27,28 @@ export class ProductService {
     const filter = getProductsDto.search
       ? { name: { $regex: getProductsDto.search, $options: 'i' } }
       : {};
-
     const products = await this.productModel
       .find(filter)
+      .populate('categoryIds', 'name')
       .limit(getProductsDto.limit)
       .skip(getProductsDto.limit * (getProductsDto.page - 1))
+      .sort({ createdAt: -1 })
+      .lean()
       .exec();
 
+
+    const formattedProducts = products.map(({ categoryIds, ...rest }) => ({
+      ...rest,
+      categories: categoryIds
+
+    }));
+
     return {
-      products,
+      products: formattedProducts,
       count: await this.productModel.countDocuments(filter).exec(),
     };
   }
+
 
 
   async findOne(id: string) {
@@ -47,18 +57,19 @@ export class ProductService {
     return product;
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto, file: Express.Multer.File) {
-    const updatedProduct = new this.productModel(updateProductDto);
+  async update(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File) {
+    const updateData: any = { ...updateProductDto };
 
-    if (file) updatedProduct.imageUrl = await this.uploadService.uploadFile(file, 'products');
+    if (file) {
+      updateData.imageUrl = await this.uploadService.uploadFile(file, 'products');
+    }
 
     const product = await this.productModel
-      .findByIdAndUpdate(id, updatedProduct, { new: true })
+      .findByIdAndUpdate(id, updateData, { new: true })
       .exec();
 
     return product;
   }
-
   async remove(id: string) {
     const product = await this.productModel.findByIdAndDelete(id).exec();
 

@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { GetProductsDto } from './dto/get-products.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('product')
@@ -12,10 +11,11 @@ export class ProductController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async create(
-    @Body() createProductDto: CreateProductDto,
+    @Body('createProductDto') createProductDtoString: string,
     @UploadedFile() file: Express.Multer.File
   ) {
     try {
+      const createProductDto: CreateProductDto = JSON.parse(createProductDtoString);
       const product = await this.productService.create(createProductDto, file);
 
       return {
@@ -30,10 +30,16 @@ export class ProductController {
 
   @Get()
   async findAll(
-    @Body() getProductsDto: GetProductsDto
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('search') search?: string,
   ) {
     try {
-      const data = await this.productService.findAndCount(getProductsDto);
+      const data = await this.productService.findAndCount({
+        limit: parseInt(limit),
+        page: parseInt(page),
+        search
+      });
 
       return {
         statusCode: HttpStatus.OK,
@@ -64,10 +70,11 @@ export class ProductController {
   @UseInterceptors(FileInterceptor('file'))
   async update(
     @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
-    @UploadedFile() file: Express.Multer.File
+    @Body('updateProductDto') updateProductDtoString: string,
+    @UploadedFile() file?: Express.Multer.File
   ) {
     try {
+      const updateProductDto: UpdateProductDto = JSON.parse(updateProductDtoString);
       const product = await this.productService.update(id, updateProductDto, file);
 
       return {
