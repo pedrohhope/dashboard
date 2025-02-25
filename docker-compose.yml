@@ -3,20 +3,31 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: hub-backend
+    container_name: backend
     restart: always
     ports:
       - "3000:3000"
     environment:
-      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/hub?authSource=admin
+      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/mongodatabase?authSource=admin
       - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
       - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
       - AWS_REGION=us-east-1
-      - AWS_S3_BUCKET=hub
+      - AWS_S3_BUCKET=afya
       - AWS_ENDPOINT=http://localstack:4566
     depends_on:
       - mongo
       - localstack
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
   mongo:
     image: mongo
@@ -29,7 +40,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootpassword
-      MONGO_INITDB_DATABASE: hub
+      MONGO_INITDB_DATABASE: mongodatabase
 
   localstack:
     image: localstack/localstack
@@ -45,7 +56,13 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "localstack_data:/var/lib/localstack"
+      - "./create-s3-bucket.sh:/etc/localstack/init/create-s3-bucket.sh"
 
 volumes:
   mongo_data:
   localstack_data:
+
+
+networks:
+  app-network:
+    driver: bridge
