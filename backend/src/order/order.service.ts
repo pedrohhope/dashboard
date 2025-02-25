@@ -14,6 +14,16 @@ export class OrderService {
     return newOrder.save();
   }
 
+
+  async getSalesReport(): Promise<number> {
+    const orders = await this.OrderModel.find({
+      createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    });
+
+    const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
+    return totalSales;
+  }
+
   async findAll() {
     const orders = await this.OrderModel.find().sort({ createdAt: -1 })
       .lean()

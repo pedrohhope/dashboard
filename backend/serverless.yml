@@ -1,0 +1,12 @@
+service: afya
+provider:
+  name: aws
+  runtime: nodejs18.x
+  environment:
+    MONGO_URI: "mongodb://root:rootpassword@localhost:27017/mongodatabase?authSource=admin"
+
+functions:
+  processSalesReport:
+    handler: src/lambda.processSalesReport
+    events:
+      - schedule: rate(24 hours) # Executa a cada 24 horas
