@@ -1,17 +1,17 @@
 import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
-import { Box, Fade, Input, Snackbar, Tooltip, Typography } from '@mui/material';
+import { Box, Fade, Snackbar, Tooltip, Typography } from '@mui/material';
 import { Button } from '../../stories/Button';
 import { useEffect, useState } from 'react';
 import { CreateProductDto, Product, UpdateProductDto } from '../../types/products';
 import { productService } from '../../services/ProductService';
 import CreateProductModal from './components/CreateProductModal';
-import { Category, GetAllCategoriesResponse } from '../../types/categories';
 import { categoryService } from '../../services/CategoryService';
 import { TransitionProps } from '@mui/material/transitions';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import UpdateProductModal from './components/UpdateProductModal';
 import { format } from 'date-fns';
+import { Category } from '../../types/categories';
 
 const formatCentsToReais = (cents: number): string => {
   return (cents / 100).toLocaleString('pt-BR', {
@@ -36,13 +36,11 @@ export default function ProductsPage() {
     page: 0,
     pageSize: 10,
   });
-  const [search, setSearch] = useState('');
-  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
   const [openUpdateProductModal, setOpenUpdateProductModal] = useState(false);
-  const [categories, setCategories] = useState<GetAllCategoriesResponse['categories']>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [productToUpdate, setProductToUpdate] = useState<Product | null>(null);
 
   const [state, setState] = useState<{
@@ -69,7 +67,7 @@ export default function ProductsPage() {
           Transition: Fade,
           message: 'Produto deletado com sucesso',
         });
-        getProducts();
+        setProducts(products.filter((product) => product._id !== _id));
       }
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -95,24 +93,17 @@ export default function ProductsPage() {
   const getProducts = async () => {
     setLoading(true);
     try {
-      const { data } = await productService.get({
-        page: paginationModel.page + 1,
-        limit: paginationModel.pageSize,
-        search,
-      });
+      const { data } = await productService.get();
 
-      if (data && data.products && data.count !== undefined) {
+      if (data && data.products !== undefined) {
         setProducts(data.products);
-        setTotal(data.count);
       } else {
         console.error("Invalid data received from API:", data);
         setProducts([]);
-        setTotal(0);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
       setProducts([]);
-      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -120,7 +111,7 @@ export default function ProductsPage() {
 
   const getCategories = async () => {
     try {
-      const { data } = await categoryService.getAll();
+      const { data } = await categoryService.get();
       if (data && data.categories) {
         setCategories(data.categories);
       } else {
@@ -136,20 +127,12 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
-    getProducts();
-  }, [paginationModel, search]);
+    Promise.all([getProducts(), getCategories()]);
 
-  useEffect(() => {
-    getCategories();
   }, []);
 
   const handlePaginationModelChange = (newPaginationModel: GridPaginationModel) => {
     setPaginationModel(newPaginationModel);
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
-    setPaginationModel({ ...paginationModel, page: 0 });
   };
 
   const onCreateProduct = async (createProductDto: CreateProductDto, file: File) => {
@@ -163,7 +146,7 @@ export default function ProductsPage() {
           message: 'Produto criado com sucesso',
         });
         setOpenCreateProductModal(false);
-        getProducts();
+        setProducts([...products, data]);
       }
     } catch (error) {
       console.error("Error creating product:", error);
@@ -186,7 +169,7 @@ export default function ProductsPage() {
           message: 'Produto atualizado com sucesso',
         });
         setOpenCreateProductModal(false);
-        getProducts();
+        setProducts(products.map((product) => (product._id === _id ? data : product)));
       }
     } catch (error) {
       console.error("Error updating product:", error);
@@ -288,8 +271,7 @@ export default function ProductsPage() {
 
   return (
     <div>
-      <Box display={'flex'} justifyContent={'space-between'} mb={2}>
-        <Input type="text" placeholder="Buscar" value={search} onChange={handleSearchChange} />
+      <Box display={'flex'} justifyContent={'end'} mb={2}>
         <Button
           variant="contained"
           label="Adicionar produto"
@@ -303,17 +285,10 @@ export default function ProductsPage() {
         getRowId={(row) => row._id}
         columns={columns}
         pagination={true}
-        rowCount={total}
-        localeText={{
-          MuiTablePagination: {
-            labelRowsPerPage: "Linhas por página:",
-          },
-        }}
-        paginationMode="server"
+        rowCount={products.length}
         paginationModel={paginationModel}
         onPaginationModelChange={handlePaginationModelChange}
-        onRowCountChange={(count) => console.log("OnChangeCount", count)}
-        pageSizeOptions={[10, 20]}
+        pageSizeOptions={[5, 10]}
         loading={loading}
         checkboxSelection
         sx={{ border: 0 }}

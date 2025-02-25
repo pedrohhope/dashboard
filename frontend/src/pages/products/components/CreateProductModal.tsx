@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, MenuItem, InputLabel, FormControl, Select, Chip, Box, Stack } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, MenuItem, InputLabel, FormControl, Select, Chip, Box } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
-import { GetAllCategoriesResponse } from '../../../types/categories';
 import { CreateProductDto } from '../../../types/products';
-import { useDropzone } from 'react-dropzone'; // Importando o hook da react-dropzone
+import { useDropzone } from 'react-dropzone';
+import { Category } from '../../../types/categories';
 
 interface ProductFormValues {
     name: string;
@@ -17,7 +17,7 @@ interface ProductFormValues {
 interface CreateProductModalProps {
     open: boolean;
     onClose: () => void;
-    categories: GetAllCategoriesResponse['categories'];
+    categories: Category[];
     onSubmit: (data: CreateProductDto, file: File) => void;
 }
 
@@ -154,12 +154,12 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({ open, onClose, 
                                     multiple
                                     onChange={(event) => field.onChange(event.target.value)}
                                     renderValue={(selected) => (
-                                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                             {(selected as string[]).map((value) => {
                                                 const category = categories.find((c) => c._id === value);
                                                 return category ? <Chip key={value} label={category.name} /> : null;
                                             })}
-                                        </Stack>
+                                        </Box>
                                     )}
                                 >
                                     {categories.map((category) => (

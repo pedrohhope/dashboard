@@ -1,5 +1,5 @@
 import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
-import { Box, Fade, Input, Snackbar, Tooltip, Typography } from '@mui/material';
+import { Box, Fade, Snackbar, Tooltip, Typography } from '@mui/material';
 import { Button } from '../../stories/Button';
 import { useEffect, useState } from 'react';
 import { Category } from '../../types/categories';
@@ -27,8 +27,6 @@ export default function CategoriesPage() {
         page: 0,
         pageSize: 10,
     });
-    const [search, setSearch] = useState('');
-    const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
     const [openCreateCategoryModal, setOpenCreateCategoryModal] = useState(false);
     const [openUpdateCategoryModal, setOpenUpdateCategoryModal] = useState(false);
@@ -58,7 +56,7 @@ export default function CategoriesPage() {
                     Transition: Fade,
                     message: 'Categoria deletado com sucesso',
                 });
-                getCategories();
+                setCategories(categories.filter((category) => category._id !== _id));
             }
         } catch (error) {
             console.error("Error deleting category:", error);
@@ -84,24 +82,17 @@ export default function CategoriesPage() {
     const getCategories = async () => {
         setLoading(true);
         try {
-            const { data } = await categoryService.get({
-                page: paginationModel.page + 1,
-                limit: paginationModel.pageSize,
-                search,
-            });
+            const { data } = await categoryService.get();
 
-            if (data && data.categories && data.count !== undefined) {
+            if (data && data.categories !== undefined) {
                 setCategories(data.categories);
-                setTotal(data.count);
             } else {
                 console.error("Invalid data received from API:", data);
                 setCategories([]);
-                setTotal(0);
             }
         } catch (error) {
             console.error("Error fetching categories:", error);
             setCategories([]);
-            setTotal(0);
         } finally {
             setLoading(false);
         }
@@ -109,15 +100,10 @@ export default function CategoriesPage() {
 
     useEffect(() => {
         getCategories();
-    }, [paginationModel, search]);
+    }, []);
 
     const handlePaginationModelChange = (newPaginationModel: GridPaginationModel) => {
         setPaginationModel(newPaginationModel);
-    };
-
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(event.target.value);
-        setPaginationModel({ ...paginationModel, page: 0 });
     };
 
     const onCreateCategory = async (name: string) => {
@@ -131,7 +117,7 @@ export default function CategoriesPage() {
                     message: 'Categoria criado com sucesso',
                 });
                 setOpenCreateCategoryModal(false);
-                getCategories();
+                setCategories([...categories, data]);
             }
         } catch (error) {
             console.error("Error creating category:", error);
@@ -154,7 +140,7 @@ export default function CategoriesPage() {
                     message: 'Categoria atualizado com sucesso',
                 });
                 setOpenCreateCategoryModal(false);
-                getCategories();
+                setCategories(categories.map((category) => (category._id === _id ? data : category)));
             }
         } catch (error) {
             console.error("Error updating category:", error);
@@ -242,8 +228,7 @@ export default function CategoriesPage() {
 
     return (
         <div>
-            <Box display={'flex'} justifyContent={'space-between'} mb={2}>
-                <Input type="text" placeholder="Buscar" value={search} onChange={handleSearchChange} />
+            <Box display={'flex'} justifyContent={'end'} mb={2}>
                 <Button
                     variant="contained"
                     label="Adicionar categoria"
@@ -257,17 +242,10 @@ export default function CategoriesPage() {
                 getRowId={(row) => row._id}
                 columns={columns}
                 pagination={true}
-                rowCount={total}
-                localeText={{
-                    MuiTablePagination: {
-                        labelRowsPerPage: "Linhas por página:",
-                    },
-                }}
-                paginationMode="server"
+                rowCount={categories.length}
                 paginationModel={paginationModel}
                 onPaginationModelChange={handlePaginationModelChange}
-                onRowCountChange={(count) => console.log("OnChangeCount", count)}
-                pageSizeOptions={[10, 20]}
+                pageSizeOptions={[5, 10]}
                 loading={loading}
                 checkboxSelection
                 sx={{ border: 0 }}

@@ -12,12 +12,4 @@ export interface GetCategoriesDto {
 
 export interface GetCategoriesResponse {
     categories: Category[];
-    count: number;
-}
-
-export interface GetAllCategoriesResponse {
-    categories: {
-        _id: string;
-        name: string;
-    }[];
 }

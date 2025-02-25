@@ -1,12 +1,10 @@
-import { CreateProductDto, GetProductsDto, GetProductsResponse, Product } from "../types/products";
+import { CreateProductDto, GetProductsResponse, Product } from "../types/products";
 import { api, Response } from "./api";
 
 class ProductService {
 
-    async get(params: GetProductsDto): Promise<Response<GetProductsResponse>> {
-        const response = await api.get<Response<GetProductsResponse>>('/product', {
-            params
-        });
+    async get(): Promise<Response<GetProductsResponse>> {
+        const response = await api.get<Response<GetProductsResponse>>('/product');
         return response.data;
     }
 

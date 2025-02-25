@@ -8,7 +8,6 @@ export interface GetProductsDto {
 
 export interface GetProductsResponse {
     products: Product[];
-    count: number;
 }
 
 export interface Product {
@@ -16,10 +15,7 @@ export interface Product {
     name: string;
     description: string;
     price: number;
-    categories: {
-        _id: string;
-        name: string;
-    }[];
+    categoryIds: string[];
     imageUrl: string;
     updatedAt: Date;
 }

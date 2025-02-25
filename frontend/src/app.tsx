@@ -42,6 +42,9 @@ export default function App() {
     return (
         <ReactRouterAppProvider
             navigation={NAVIGATION}
+            branding={{
+                title: 'Painel de controle',
+            }}
         >
             <Outlet />
         </ReactRouterAppProvider>

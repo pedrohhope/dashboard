@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, MenuItem, InputLabel, FormControl, Select, Chip, Box, Stack } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, MenuItem, InputLabel, FormControl, Select, Chip, Box } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
 import { Product, UpdateProductDto } from '../../../types/products';
 import { useDropzone } from 'react-dropzone';
-import { Category, GetAllCategoriesResponse } from '../../../types/categories';
+import { Category } from '../../../types/categories';
 
 interface ProductFormValues {
     name: string;
@@ -18,14 +18,14 @@ interface UpdateProductModalProps {
     open: boolean;
     onClose: () => void;
     product: Product;
-    categories: GetAllCategoriesResponse['categories'];
+    categories: Category[]
     onSubmit: (_id: string, data: UpdateProductDto, file?: File) => void;
 }
 
 const UpdateProductModal: React.FC<UpdateProductModalProps> = ({ open, onClose, product, onSubmit, categories }) => {
     const { register, handleSubmit, formState: { errors }, control, reset, setValue } = useForm<ProductFormValues>({
         defaultValues: {
-            categoryIds: product.categories.map((category) => category._id),
+            categoryIds: product.categoryIds || [],
             name: product.name || '',
             description: product.description || '',
             price: product.price ? (product.price / 100).toString() : '',
@@ -161,12 +161,12 @@ const UpdateProductModal: React.FC<UpdateProductModalProps> = ({ open, onClose, 
                                     multiple
                                     onChange={(event) => field.onChange(event.target.value)}
                                     renderValue={(selected) => (
-                                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                             {(selected as string[]).map((value) => {
                                                 const category = categories.find((c) => c._id === value);
                                                 return category ? <Chip key={value} label={category.name} /> : null;
                                             })}
-                                        </Stack>
+                                        </Box>
                                     )}
                                 >
                                     {categories.map((category) => (
