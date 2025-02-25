@@ -4,7 +4,7 @@ provider:
   region: us-east-1
   endpoint: http://localstack:4566
   environment:
-    MONGO_URI: "mongodb://root:rootpassword@localhost:27017/mongodatabase?authSource=admin"
+    MONGO_URI: ${env:MONGO_URI}
 
 functions:
   processSalesReport:
