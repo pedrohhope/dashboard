@@ -22,6 +22,21 @@ export class OrderController {
     }
   }
 
+  @Get('metrics')
+  async metrics() {
+    try {
+      const data = await this.orderService.metrics();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data,
+        message: 'Metrics found'
+      }
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Get()
   async findAll() {
     try {
