@@ -29,17 +29,9 @@ export class ProductController {
   }
 
   @Get()
-  async findAll(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
-    @Query('search') search?: string,
-  ) {
+  async findAll() {
     try {
-      const data = await this.productService.findAndCount({
-        limit: parseInt(limit),
-        page: parseInt(page),
-        search
-      });
+      const data = await this.productService.findAll()
 
       return {
         statusCode: HttpStatus.OK,

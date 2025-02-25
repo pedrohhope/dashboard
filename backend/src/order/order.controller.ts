@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpException, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { GetOrdersDto } from './dto/get-orders.dto';
 
 @Controller('order')
 export class OrderController {
@@ -24,11 +23,9 @@ export class OrderController {
   }
 
   @Get()
-  async findAll(
-    @Body() getOrdersDto: GetOrdersDto
-  ) {
+  async findAll() {
     try {
-      const data = await this.orderService.findAndCount(getOrdersDto);
+      const data = await this.orderService.findAll();
 
       return {
         statusCode: HttpStatus.OK,

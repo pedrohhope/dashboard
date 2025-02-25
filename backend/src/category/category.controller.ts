@@ -22,8 +22,8 @@ export class CategoryController {
     }
   }
 
-  @Get('all')
-  async findAllCategories() {
+  @Get()
+  async findAll() {
     try {
       const {
         categories
@@ -34,29 +34,6 @@ export class CategoryController {
         data: {
           categories
         },
-        message: 'categories found',
-      }
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  @Get()
-  async findAndCount(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
-    @Query('search') search?: string,
-  ) {
-    try {
-      const data = await this.categoryService.findAndCount({
-        limit: parseInt(limit),
-        page: parseInt(page),
-        search
-      });
-
-      return {
-        statusCode: HttpStatus.OK,
-        data,
         message: 'categories found',
       }
     } catch (error) {

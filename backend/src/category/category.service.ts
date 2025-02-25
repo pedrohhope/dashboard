@@ -11,37 +11,21 @@ export class CategoryService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>
   ) { }
+
+
   async create(createCategoryDto: CreateCategoryDto) {
     const createdCategory = new this.categoryModel(createCategoryDto);
     return createdCategory.save();
   }
 
   async findAllCategories() {
-    const categories = await this.categoryModel.find().select('name _id').exec();
+    const categories = await this.categoryModel
+      .find()
+      .sort({ updatedAt: -1 })
+      .exec();
     return {
       categories
     };
-  }
-
-
-  async findAndCount(getCategoriesDto: GetCategoriesDto) {
-    const filter = getCategoriesDto.search
-      ? { name: { $regex: getCategoriesDto.search, $options: 'i' } }
-      : {};
-
-    const categories = await this.categoryModel
-      .find(filter)
-      .limit(getCategoriesDto.limit)
-      .skip(getCategoriesDto.limit * (getCategoriesDto.page - 1))
-      .exec();
-
-    const count = await this.categoryModel.countDocuments(filter);
-
-    return {
-      categories,
-      count,
-    };
-
   }
 
 

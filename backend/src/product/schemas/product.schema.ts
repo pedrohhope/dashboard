@@ -22,6 +22,9 @@ export class Product {
         default: 'https://placehold.co/300x300',
     })
     imageUrl: string;
+
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

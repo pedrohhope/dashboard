@@ -4,7 +4,6 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schemas/product.schema';
 import { Model } from 'mongoose';
-import { GetProductsDto } from './dto/get-products.dto';
 import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
@@ -23,32 +22,13 @@ export class ProductService {
     return newProduct.save();
   }
 
-  async findAndCount(getProductsDto: GetProductsDto) {
-    const filter = getProductsDto.search
-      ? { name: { $regex: getProductsDto.search, $options: 'i' } }
-      : {};
-    const products = await this.productModel
-      .find(filter)
-      .populate('categoryIds', 'name')
-      .limit(getProductsDto.limit)
-      .skip(getProductsDto.limit * (getProductsDto.page - 1))
-      .sort({ createdAt: -1 })
-      .lean()
-      .exec();
-
-
-    const formattedProducts = products.map(({ categoryIds, ...rest }) => ({
-      ...rest,
-      categories: categoryIds
-
-    }));
+  async findAll() {
+    const products = await this.productModel.find().sort({ updatedAt: -1 }).exec();
 
     return {
-      products: formattedProducts,
-      count: await this.productModel.countDocuments(filter).exec(),
-    };
+      products
+    }
   }
-
 
 
   async findOne(id: string) {
