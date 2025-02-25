@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Order, UpdateOrderDto } from '../../../types/orders';
 import { Product } from '../../../types/products';
 import { DatePicker } from '@mui/x-date-pickers';
+import { formatCentsToReais } from '../../../utils/price';
 
 interface OrderFormValues {
     productIds: string[];
@@ -81,7 +82,7 @@ const UpdateOrderModal: React.FC<UpdateOrderModalProps> = ({ open, onClose, prod
                     </FormControl>
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                        <p>Total: {calculateTotal().toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                        <p>Total: {formatCentsToReais(calculateTotal())}</p>
                     </Box>
                 </Box>
             </DialogContent>

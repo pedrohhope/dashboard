@@ -1,4 +1,4 @@
-import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 import { Box, Fade, Snackbar, Tooltip, Typography } from '@mui/material';
 import { Button } from '../../stories/Button';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { format } from 'date-fns';
 import CreateCategoryModal from './components/CreateCategoryModal';
 import UpdateCategoryModal from './components/UpdateCategoryModal';
+import { DataGrid } from '../../stories/DataGrid';
 
 const Cell = ({ value }: { value: any }) => {
     return (

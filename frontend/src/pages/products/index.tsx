@@ -1,4 +1,4 @@
-import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 import { Box, Fade, Snackbar, Tooltip, Typography } from '@mui/material';
 import { Button } from '../../stories/Button';
 import { useEffect, useState } from 'react';
@@ -12,13 +12,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import UpdateProductModal from './components/UpdateProductModal';
 import { format } from 'date-fns';
 import { Category } from '../../types/categories';
-
-const formatCentsToReais = (cents: number): string => {
-  return (cents / 100).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  });
-};
+import { formatCentsToReais } from '../../utils/price';
+import { DataGrid } from '../../stories/DataGrid';
 
 const Cell = ({ value }: { value: any }) => {
   return (

@@ -1,4 +1,4 @@
-import { CreateOrderDto, CreateOrderResponse, GetOrdersResponse, Order, UpdateOrderDto } from "../types/orders";
+import { CreateOrderDto, CreateOrderResponse, GetOrdersMetricsResponse, GetOrdersResponse, Order, UpdateOrderDto } from "../types/orders";
 import { api, Response } from "./api";
 
 
@@ -20,6 +20,11 @@ class OrderService {
 
     async update(id: string, updateOrderDto: UpdateOrderDto) {
         const response = await api.patch<Response<Order>>(`/order/${id}`, updateOrderDto);
+        return response.data;
+    }
+
+    async getMetrics() {
+        const response = await api.get<Response<GetOrdersMetricsResponse>>('/order/metrics');
         return response.data;
     }
 }
